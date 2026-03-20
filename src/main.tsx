@@ -10,6 +10,7 @@ import { PsychologistDashboard } from './components/PsychologistDashboard.tsx';
 import { MentalHealthResources } from './components/MentalHealthResources.tsx';
 import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { DashboardLanguageProvider } from './context/DashboardLanguageContext.tsx';
+import { DatabaseSeeder } from './components/DatabaseSeeder.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<AuthForm />} />
           <Route path="/dashboard" element={<PsychologistDashboard />} />
           <Route path="/resources" element={<MentalHealthResources />} />
+          <Route path="/seed" element={<DatabaseSeeder />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
