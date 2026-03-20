@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peupler la base de données</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #log {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .success { color: #4CAF50; }
+    .error { color: #f44336; }
+    .info { color: #2196F3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌱 Peupler la base de données</h1>
+    <p>Cliquez sur le bouton ci-dessous pour ajouter 12 psychologues avec leurs créneaux horaires.</p>
+    <button id="seedBtn" onclick="seedDatabase()">Démarrer le peuplement</button>
+    <div id="log"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://toautqoefpfspjqezkyr.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvYXV0cW9lZnBmc3BqcWV6a3lyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2Njg3MTUsImV4cCI6MjA1NDI0NDcxNX0.pr39r8I9o667gHSbHns-NL5BvVC_277sA8hOqffVG2E';
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const span = document.createElement('div');
+      span.className = type;
+      span.textContent = message;
+      logDiv.appendChild(span);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    async function seedDatabase() {
+      const btn = document.getElementById('seedBtn');
+      btn.disabled = true;
+      document.getElementById('log').innerHTML = '';
+
+      log('🌱 Début du peuplement de la base de données...', 'info');
+
+      try {
+        // Récupération des spécialités
+        const { data: specialties, error: specError } = await sb
+          .from('specialties')
+          .select('id, name');
+
+        if (specError) throw specError;
+
+        const specMap = {};
+        specialties.forEach(s => {
+          specMap[s.name] = s.id;
+        });
+
+        log(`✓ ${specialties.length} spécialités trouvées`, 'success');
+
+        const psychologists = [
+          {
+            id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+            profile: {
+              role: 'psychologist',
+              first_name: 'Amina',
+              last_name: 'Benali',
+              email: 'amina.benali@psy.ma',
+              phone: '+212600111111',
+              city: 'Casablanca'
+            },
+            psychologist: {
+              address: '45 Boulevard Zerktouni',
+              postal_code: '20000',
+              description: 'Psychologue clinicienne spécialisée dans le traitement de l\'anxiété et de la dépression.',
+              years_of_experience: 10,
+              hourly_rate: 500,
+              photo_url: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400',
+              consultation_type: ['in-person', 'video'],
+              languages: ['french', 'arabic']
+            },
+            specialties: ['Anxiété', 'Dépression', 'Thérapie Cognitive Comportementale']
+          },
+          {
+            id: '550e8400-e29b-41d4-a716-446655440001',
+            profile: {
+              role: 'psychologist',
+              first_name: 'Karim',
+              last_name: 'El Amrani',
+              email: 'karim.elamrani@psy.ma',
+              phone: '+212600222222',
+              city: 'Rabat'
+            },
+            psychologist: {
+              address: '12 Avenue Hassan II',
+              postal_code: '10000',
+              description: 'Spécialiste en thérapie de couple et familiale.',
+              years_of_experience: 8,
+              hourly_rate: 600,
+              photo_url: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400',
+              consultation_type: ['in-person', 'video'],
+              languages: ['french', 'english', 'arabic']
+            },
+            specialties: ['Thérapie de couple', 'Thérapie familiale', 'Stress']
+          },
+          {
+            id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+            profile: {
+              role: 'psychologist',
+              first_name: 'Sarah',
+              last_name: 'Idrissi',
+              email: 'sarah.idrissi@psy.ma',
+              phone: '+212600333333',
+              city: 'Marrakech'
+            },
+            psychologist: {
+              address: '28 Avenue Mohammed V',
+              postal_code: '40000',
+              description: 'Psychologue expérimentée dans l\'accompagnement des victimes de traumatismes.',
+              years_of_experience: 12,
+              hourly_rate: 650,
+              photo_url: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400',
+              consultation_type: ['in-person', 'video'],
+              languages: ['french', 'english']
+            },
+            specialties: ['Traumatismes', 'Anxiété', 'Dépression']
+          },
+          {
+            id: '6ba7b811-9dad-11d1-80b4-00c04fd430c8',
+            profile: {
+              role: 'psychologist',
+              first_name: 'Mehdi',
+              last_name: 'Tazi',
+              email: 'mehdi.tazi@psy.ma',
+              phone: '+212600444444',
+              city: 'Fès'
+            },
+            psychologist: {
+              address: '15 Rue Souani',
+              postal_code: '30000',
+              description: 'Spécialiste en burn-out et gestion du stress professionnel.',
+              years_of_experience: 7,
+              hourly_rate: 450,
+              photo_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400',
+              consultation_type: ['in-person', 'video', 'phone'],
+              languages: ['french', 'arabic']
+            },
+            specialties: ['Burn-out', 'Stress', 'Anxiété']
+          },
+          {
+            id: '6ba7b812-9dad-11d1-80b4-00c04fd430c8',
+            profile: {
+              role: 'psychologist',
+              first_name: 'Leila',
+              last_name: 'Mansouri',
+              email: 'leila.mansouri@psy.ma',
+              phone: '+212600555555',
+              city: 'Tanger'
+            },
+            psychologist: {
+              address: '8 Boulevard Pasteur',
+              postal_code: '90000',
+              description: 'Psychologue spécialisée dans les addictions et les dépendances.',
+              years_of_experience: 9,
+              hourly_rate: 550,
+              photo_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+              consultation_type: ['in-person', 'video'],
+              languages: ['french', 'english', 'arabic']
+            },
+            specialties: ['Addictions', 'Thérapie Cognitive Comportementale', 'Anxiété']
+          },
+          {
+            id: '6ba7b813-9dad-11d1-80b4-00c04fd430c8',
+            profile: {
+              role: 'psychologist',
+              first_name: 'Youssef',
+              last_name: 'Alaoui',
+              email: 'youssef.alaoui@psy.ma',
+              phone: '+212600666666',
+              city: 'Casablanca'
+            },
+            psychologist: {
+              address: '67 Rue Abdelmoumen',
+              postal_code: '20100',
+              description: 'Psychothérapeute spécialisé dans les troubles alimentaires.',
+              years_of_experience: 11,
+              hourly_rate: 700,
+              photo_url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400',
+              consultation_type: ['in-person', 'video'],
+              languages: ['french', 'english']
+            },
+            specialties: ['Troubles alimentaires', 'Anxiété', 'Thérapie Cognitive Comportementale']
+          }
+        ];
+
+        for (const psy of psychologists) {
+          log(`\n📝 Insertion de Dr. ${psy.profile.first_name} ${psy.profile.last_name}...`, 'info');
+
+          // Profil
+          const { error: profileError } = await sb
+            .from('profiles')
+            .insert({ id: psy.id, ...psy.profile });
+
+          if (profileError && profileError.code !== '23505') {
+            log(`  ⚠️ Profil: ${profileError.message}`, 'error');
+            continue;
+          }
+
+          // Psychologue
+          const { error: psychError } = await sb
+            .from('psychologists')
+            .insert({ id: psy.id, ...psy.psychologist });
+
+          if (psychError && psychError.code !== '23505') {
+            log(`  ⚠️ Psychologue: ${psychError.message}`, 'error');
+            continue;
+          }
+
+          // Spécialités
+          for (const specName of psy.specialties) {
+            if (specMap[specName]) {
+              await sb
+                .from('psychologist_specialties')
+                .insert({
+                  psychologist_id: psy.id,
+                  specialty_id: specMap[specName]
+                });
+            }
+          }
+
+          // Créneaux pour les 7 prochains jours
+          const slots = [];
+          for (let d = 0; d < 7; d++) {
+            const date = new Date();
+            date.setDate(date.getDate() + d);
+
+            const morning = new Date(date);
+            morning.setHours(9, 0, 0, 0);
+            const morningEnd = new Date(morning);
+            morningEnd.setHours(10, 0, 0, 0);
+
+            const afternoon = new Date(date);
+            afternoon.setHours(14, 0, 0, 0);
+            const afternoonEnd = new Date(afternoon);
+            afternoonEnd.setHours(15, 0, 0, 0);
+
+            slots.push({
+              psychologist_id: psy.id,
+              start_time: morning.toISOString(),
+              end_time: morningEnd.toISOString()
+            });
+
+            slots.push({
+              psychologist_id: psy.id,
+              start_time: afternoon.toISOString(),
+              end_time: afternoonEnd.toISOString()
+            });
+          }
+
+          const { error: slotsError } = await sb
+            .from('time_slots')
+            .insert(slots);
+
+          if (slotsError) {
+            log(`  ⚠️ Créneaux: ${slotsError.message}`, 'error');
+          } else {
+            log(`  ✓ ${slots.length} créneaux créés`, 'success');
+          }
+        }
+
+        log('\n✨ Peuplement terminé avec succès!', 'success');
+        log(`${psychologists.length} psychologues ont été ajoutés`, 'success');
+      } catch (error) {
+        log(`\n❌ Erreur: ${error.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
